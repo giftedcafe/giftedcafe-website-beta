@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const profiles = await getCollection('profile');
+  
+  return profiles.map(profile => {
+    const lang = profile.slug || profile.id.replace(/\.md$/, '');
+    return {
+      params: { lang },
+      props: { 
+        profile, 
+        allProfiles: profiles
+      },
+    };
+  });
+}
+
+const { profile, allProfiles } = Astro.props;
+const currentLang = profile.slug || profile.id.replace(/\.md$/, '');
+const { Content } = await profile.render();
+---
+<Layout frontmatter={profile.data} currentLang={currentLang} allProfiles={allProfiles}>
+  <Content />
+</Layout>

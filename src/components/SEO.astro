@@ -1,0 +1,136 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  name: string;
+  surname: string;
+  handle: string;
+  currentLang: string;
+  allProfiles: any[];
+}
+
+const { title, description, name, surname, handle, currentLang, allProfiles } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const socialImageURL = new URL('/og-image.png', Astro.site);
+
+const communityName = "Gifted Cafe";
+const communityUrl = Astro.site;
+const discordUrl = "https://disboard.org/server/1515665959678115980";
+
+const founderName = `${name} ${surname}`.trim();
+
+const ogLocale = (() => {
+  const map: Record<string, string> = {
+    en: 'en_US',
+    de: 'de_DE',
+    fr: 'fr_FR',
+    es: 'es_ES',
+    ru: 'ru_RU',
+    id: 'id_ID',
+    'zh-tw': 'zh_TW'
+  };
+  return map[currentLang] || 'en_US';
+})();
+
+// Keywords focused on community and giftedness
+const keywords = "gifted cafe, gifted individuals, highly gifted, exceptionally gifted, profoundly gifted, giftedness, gifted community, discord community, third place, thinking";
+
+// Structured data for a social community / Discord server
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${communityUrl}#website`,
+      "url": communityUrl,
+      "name": communityName,
+      "description": "A Comfy Third Place for Gifted Individuals — a Discord community.",
+      "inLanguage": currentLang,
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": `${communityUrl}?q={search_term_string}`
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": `${communityUrl}#organization`,
+      "name": communityName,
+      "alternateName": ["GiftedCafe", "Gifted Cafe Discord"],
+      "url": communityUrl,
+      "description": "A Comfy Third Place for Gifted Individuals. Discord server and social community designed to be comfortable for highly gifted, exceptionally gifted persons.",
+      "logo": socialImageURL.toString(),
+      "image": socialImageURL.toString(),
+      "sameAs": [
+        discordUrl
+      ],
+      "founder": {
+        "@type": "Person",
+        "name": founderName,
+        "url": canonicalURL.toString()
+      },
+      "knowsAbout": [
+        "Gifted Individuals",
+        "Highly Gifted",
+        "Exceptionally Gifted",
+        "Profoundly Gifted",
+        "Thinking"
+      ],
+      "areaServed": "Worldwide",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "community",
+        "url": discordUrl
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": canonicalURL.toString(),
+      "url": canonicalURL.toString(),
+      "name": title,
+      "description": description,
+      "isPartOf": {
+        "@id": `${communityUrl}#website`
+      },
+      "about": {
+        "@id": `${communityUrl}#organization`
+      },
+      "inLanguage": currentLang
+    }
+  ]
+};
+---
+
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+<meta name="keywords" content={keywords} />
+<meta name="author" content={founderName || communityName} />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#faf9f6" />
+
+<link rel="canonical" href={canonicalURL} />
+<link rel="alternate" hreflang="x-default" href={new URL('/en/about', Astro.site)} />
+{allProfiles.map(p => {
+  const pLang = p.slug || p.id.replace(/\.md$/, '');
+  return <link rel="alternate" hreflang={pLang} href={new URL(`/${pLang}/about`, Astro.site)} />
+})}
+
+<!-- Open Graph / Social -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={communityName} />
+<meta property="og:locale" content={ogLocale} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={socialImageURL} />
+
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={canonicalURL} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={socialImageURL} />
+<meta property="twitter:site" content="@ataraxia" />
+
+<!-- Rich structured data for Organization + Community -->
+<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+

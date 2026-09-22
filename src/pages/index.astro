@@ -1,0 +1,26 @@
+---
+// Fallback redirect for the root path.
+//
+// On Cloudflare Pages (production), `public/_redirects` performs a real 301 at the edge.
+// This is a true instant HTTP redirect (no HTML body is ever served for `/`).
+//
+// This file only exists as a fallback for other static hosts, `astro preview`, or direct dist/ serving.
+// We return a minimal HTML with meta-refresh 0 so there is almost no visible page.
+return new Response(
+  `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="0;url=/en/about">
+  <title>Redirecting...</title>
+  <style>body{background:#faf9f6;color:#2a2a28;font-family:Georgia,serif}</style>
+</head>
+<body></body>
+</html>`,
+  {
+    status: 200,
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  }
+);
+---
+

@@ -1,0 +1,4 @@
+# Instant root redirect (301) for Cloudflare Pages.
+# This avoids the intermediate "Redirecting from / to /en/about" HTML page entirely.
+# Real HTTP redirect happens at the edge in milliseconds.
+/    /en/about    301

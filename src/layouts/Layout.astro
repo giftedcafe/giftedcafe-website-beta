@@ -1,0 +1,139 @@
+---
+import SEO from '../components/SEO.astro';
+
+interface Props {
+  frontmatter: any;
+  currentLang: string;
+  allProfiles: any[];
+}
+
+const { frontmatter, currentLang, allProfiles } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={currentLang}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <SEO 
+    title={frontmatter.title}
+    description={frontmatter.description}
+    name={frontmatter.name}
+    surname={frontmatter.surname}
+    handle={frontmatter.handle}
+    currentLang={currentLang}
+    allProfiles={allProfiles}
+  />
+</head>
+<body>
+  <div class="wash wash-a"></div>
+  <div class="wash wash-b"></div>
+  <div class="wash wash-c"></div>
+
+  <nav>
+    <a class="nav-handle" href={`/${currentLang}/about`}>@{frontmatter.handle}</a>
+    <div class="nav-links">
+      <a class="nav-link" href="https://disboard.org/server/1515665959678115980" target="_blank" rel="noopener noreferrer">Gifted Cafe (Discord)</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="bio-text">
+      <slot />
+    </div>
+
+    <p class="name">{frontmatter.name} {frontmatter.surname}</p>
+  </main>
+
+  <footer id="lang-footer">
+    <div class="footer-links">
+      <a class="footer-link" href="https://disboard.org/server/1515665959678115980" target="_blank" rel="noopener noreferrer">Gifted Cafe (Discord)</a>
+      <a class="footer-link" href="https://giftedcafe.pages.dev/" target="_blank" rel="noopener noreferrer">Leave a message</a>
+    </div>
+    <div class="lang-list">
+      {allProfiles.map(p => {
+        const pLang = p.slug || p.id.replace(/\.md$/, '');
+        return (
+          <a 
+            href={`/${pLang}/about`} 
+            class={`lang-item ${currentLang === pLang ? 'active' : ''}`}
+          >
+            {p.data.langName}
+          </a>
+        )
+      })}
+    </div>
+
+    <div class="disclaimer">
+      Views are my own and do not represent any affiliation I may belong to.
+    </div>
+  </footer>
+</body>
+</html>
+
+<style is:global>
+  :root {
+    --ink: #2a2a28;
+    --ink-muted: #7a7870;
+    --ink-faint: #b0aea6;
+    --paper: #faf9f6;
+    --wash-blue: rgba(180,215,235,0.18);
+    --wash-rose: rgba(230,195,195,0.14);
+    --wash-sage: rgba(175,205,185,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .wash { position: absolute; border-radius: 60% 40% 55% 45% / 50% 60% 40% 55%; pointer-events: none; z-index: 0; }
+  .wash-a { width: 420px; height: 320px; top: -80px; right: -60px; background: var(--wash-blue); }
+  .wash-b { width: 300px; height: 240px; bottom: 120px; left: -80px; background: var(--wash-rose); }
+  .wash-c { width: 200px; height: 180px; top: 42%; right: 10%; background: var(--wash-sage); opacity: 0.7; }
+
+  nav {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 48px;
+  }
+  .nav-handle { font-size: 14px; letter-spacing: 0.05em; color: var(--ink); text-decoration: none; font-weight: 500; }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-link { font-size: 13px; color: var(--ink-muted); text-decoration: none; transition: color 0.2s; }
+  .nav-link:hover { color: var(--ink); }
+
+  main { position: relative; z-index: 5; padding: 64px 48px; max-width: 800px; }
+  
+  .bio-text { font-size: 19px; line-height: 1.8; color: #3a3a38; font-weight: 400; }
+  .bio-text p { margin-bottom: 1.5em; }
+
+  .name { font-size: 19px; font-weight: 400; color: #3a3a38; font-style: normal; }
+
+  footer { position: relative; z-index: 5; padding: 48px; border-top: 0.5px solid rgba(42,42,40,0.1); }
+  .footer-links { display: flex; gap: 24px; margin-bottom: 32px; }
+  .footer-link { font-size: 13px; color: var(--ink-muted); text-decoration: none; }
+  
+  .lang-list { 
+    display: flex; flex-wrap: wrap; gap: 16px; 
+    font-size: 12px; color: var(--ink-faint);
+  }
+  .lang-item { cursor: pointer; transition: color 0.2s; text-decoration: none; color: var(--ink-faint); }
+  .lang-item:hover { color: var(--ink); }
+  .lang-item.active { color: var(--ink); font-weight: 500; pointer-events: none; }
+
+  .disclaimer {
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 600px) {
+    nav, main, footer { padding-left: 24px; padding-right: 24px; }
+  }
+</style>
